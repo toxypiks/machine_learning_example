@@ -18,6 +18,20 @@ float rand_float(void)
   return (float) rand()/ (float)RAND_MAX;
 }
 
+float cost(float w)
+{
+  float result = 0.0f;
+  for(size_t i = 0; i < train_count; ++i) {
+	float x = train[i][0];
+	float y = x*w;
+	float d = y - train[i][1];
+	// d*d cause it amplifies errors and let result always be positive
+	result += d*d;
+  }
+  return result /= train_count;
+}
+
+
 int main() {
 
   //seed random number generator with time
@@ -26,16 +40,12 @@ int main() {
   // y = x*w
   float w = rand_float() * 10.0f;
 
-  float result = 0.0f;
-  for(size_t i = 0; i < train_count; ++i) {
-	float x = train[i][1];
-	float y = x*w;
-	float d = y - train[i][1];
-	// d*d cause it amplifies errors and let result always be positive
-	result += d*d;
-  }
-  result /= train_count;
-
-  printf("%f\n", result);
+  float eps = 1e-3;
+  float rate = 1e-3;
+  //calc easy form of derivative of function (finite difference)
+  float dcost = (cost(w + eps) - cost(w))/eps;
+  printf("%f\n", cost(w));
+  w -= rate * dcost;
+  printf("%f\n", cost(w));
   return 0;
 }
