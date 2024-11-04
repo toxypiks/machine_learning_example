@@ -43,9 +43,14 @@ int main() {
   float eps = 1e-3;
   float rate = 1e-3;
   //calc easy form of derivative of function (finite difference)
-  float dcost = (cost(w + eps) - cost(w))/eps;
-  printf("%f\n", cost(w));
-  w -= rate * dcost;
-  printf("%f\n", cost(w));
+
+  for(size_t i = 0; i < 500; ++i)  {
+   float dcost = (cost(w + eps) - cost(w))/eps;
+   w -= rate * dcost;
+   printf("%f\n", cost(w));
+  }
+
+  printf("-----------------------\n");
+  printf("model value: %f\n", w);
   return 0;
 }
