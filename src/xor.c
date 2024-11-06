@@ -172,5 +172,12 @@ int main(void)
     m = apply_finite_diff(m, g, rate);
     printf("%f\n", cost(m));
   }
+
+  printf("------------------------\n");
+  for (size_t i = 0; i < 2; ++i) {
+	for (size_t j = 0; j < 2; ++j) {
+	  printf("%zu ^ %zu = %f\n", i, j, forward(m, i, j));
+	}
+  }
   return 0;
 }
