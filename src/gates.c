@@ -56,13 +56,20 @@ int main(void)
    w1 -= rate * dw1;
    w2 -= rate * dw2;
    b -= rate * db;
+   // printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
+   // printf("%f\n", c);
   }
-
-  printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, cost(w1, w2, b));
 
   for (size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
-	  printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
+	  // printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
+	}
+  }
+
+  // XOR using OR AND and NAND
+  for (size_t x = 0; x <2; ++x) {
+	for (size_t y = 0; y < 2; ++y) {
+	  printf("%zu ^ %zu = %zu\n", x, y, (x|y) & (~(x&y)));
 	}
   }
   return 0;
