@@ -35,7 +35,15 @@ sample nand_train[] = {
   {1, 1, 0},
 };
 
-sample *train = nand_train;
+// XOR-gate
+sample xor_train[] = {
+  {0, 0, 0},
+  {1, 0, 1},
+  {0, 1, 1},
+  {1, 1, 0},
+};
+
+sample *train = xor_train;
 size_t train_count = 4;
 
 float cost(float w1, float w2, float b)
@@ -87,13 +95,13 @@ int main(void)
    w1 -= rate * dw1;
    w2 -= rate * dw2;
    b -= rate * db;
-   //printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
-   // printf("%f\n", c);
+   printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
+  // printf("%f\n", c);
   }
 
   for (size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
-	  printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
+	  // printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
 	}
   }
   return 0;
