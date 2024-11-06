@@ -14,6 +14,10 @@ set(GATES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/gates.c
   )
 
+set(XOR
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/xor.c
+  )
+
 add_executable(machine_learning)
 target_sources(machine_learning
  PRIVATE
@@ -26,4 +30,12 @@ target_sources(gates
   ${GATES}
   )
 
+add_executable(xor)
+target_sources(xor
+ PRIVATE
+  ${XOR}
+  )
+
 target_link_libraries(gates m)
+
+target_link_libraries(xor m)
