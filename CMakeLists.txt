@@ -18,6 +18,10 @@ set(XOR
   ${CMAKE_CURRENT_SOURCE_DIR}/src/xor.c
   )
 
+set(NN_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/nn.c
+  )
+
 add_executable(machine_learning)
 target_sources(machine_learning
  PRIVATE
@@ -34,6 +38,12 @@ add_executable(xor)
 target_sources(xor
  PRIVATE
   ${XOR}
+  )
+
+add_library(nn SHARED)
+target_sources(nn
+ PRIVATE
+  ${NN_SRC}
   )
 
 target_link_libraries(gates m)
