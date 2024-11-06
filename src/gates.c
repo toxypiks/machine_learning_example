@@ -9,15 +9,34 @@ float sigmoidf(float x)
   return 1.0f / (1.0f + expf(-x));
 }
 
+typedef float sample[3];
+
 // OR-gate
-float train[][3] = {
+sample or_train[] = {
   {0, 0, 0},
   {1, 0, 1},
   {0, 1, 1},
   {1, 1, 1},
 };
 
-#define train_count (sizeof(train)/sizeof(train[0]))
+// AND-gate
+sample and_train[] = {
+  {0, 0, 0},
+  {1, 0, 0},
+  {0, 1, 0},
+  {1, 1, 1},
+};
+
+// NAND-gate
+sample nand_train[] = {
+  {0, 0, 1},
+  {1, 0, 1},
+  {0, 1, 1},
+  {1, 1, 0},
+};
+
+sample *train = nand_train;
+size_t train_count = 4;
 
 float cost(float w1, float w2, float b)
 {
@@ -35,6 +54,18 @@ float cost(float w1, float w2, float b)
 float rand_float(void)
 {
   return (float) rand()/ (float)RAND_MAX;
+}
+
+int main2(void)
+{
+  // XOR using OR AND and NAND
+  for (size_t x = 0; x <2; ++x) {
+	for (size_t y = 0; y < 2; ++y) {
+	  printf("%zu ^ %zu = %zu\n", x, y, (x|y) & (~(x&y)));
+	}
+  }
+
+  return 0;
 }
 
 int main(void)
@@ -56,20 +87,13 @@ int main(void)
    w1 -= rate * dw1;
    w2 -= rate * dw2;
    b -= rate * db;
-   // printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
+   //printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
    // printf("%f\n", c);
   }
 
   for (size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
-	  // printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
-	}
-  }
-
-  // XOR using OR AND and NAND
-  for (size_t x = 0; x <2; ++x) {
-	for (size_t y = 0; y < 2; ++y) {
-	  printf("%zu ^ %zu = %zu\n", x, y, (x|y) & (~(x&y)));
+	  printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
 	}
   }
   return 0;
