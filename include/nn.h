@@ -29,7 +29,8 @@ typedef struct {
 float rand_float(void);
 
 Mat mat_alloc(size_t rows, size_t cols);
-void mat_rand(Mat m);
+void mat_fill(Mat m, float x);
+void mat_rand(Mat m, float low, float high);
 void mat_dot(Mat dst, Mat a, Mat b);
 void mat_sum(Mat dst, Mat a);
 void mat_print(Mat m);
@@ -61,9 +62,13 @@ void mat_dot(Mat dst, Mat a, Mat b)
 }
 void mat_sum(Mat dst, Mat a)
 {
-  //not implemented yet
-  (void) dst;
-  (void) a;
+  NN_ASSERT(dst.rows == a.rows);
+  NN_ASSERT(dst.cols == a.cols);
+  for (size_t i = 0; i < dst.rows; ++i) {
+	for (size_t j = 0; j < dst.cols; ++j) {
+	  MAT_AT(dst, i, j) += MAT_AT(a, i ,j);
+	}
+  }
 }
 void mat_print(Mat m)
 {
@@ -75,10 +80,19 @@ void mat_print(Mat m)
   }
 }
 
-void mat_rand(Mat m) {
+void mat_fill(Mat m, float x) {
   for(size_t i = 0; i < m.rows; ++i) {
 	for(size_t j = 0; j < m.cols; ++j) {
-	  MAT_AT(m, i, j) = rand_float();
+	  MAT_AT(m, i ,j) = x;
+	}
+  }
+}
+
+void mat_rand(Mat m, float low, float high) {
+  for(size_t i = 0; i < m.rows; ++i) {
+	for(size_t j = 0; j < m.cols; ++j) {
+	  // rand_float times range but starting at low (offset low by adding low)
+	  MAT_AT(m, i, j) = rand_float()*(high-low) + low;
 	}
   }
 }
