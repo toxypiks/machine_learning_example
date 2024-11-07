@@ -40,6 +40,12 @@ target_sources(xor
   ${XOR}
   )
 
+add_executable(nn_src)
+target_sources(nn_src
+ PRIVATE
+  ${NN_SRC}
+  )
+
 add_library(nn SHARED)
 target_sources(nn
  PRIVATE

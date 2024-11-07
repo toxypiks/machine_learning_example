@@ -2,6 +2,7 @@
 #define NN_H_
 
 #include <stddef.h>
+#include <stdio.h>
 
 #ifndef NN_MALLOC
 #include <stdlib.h>
@@ -20,6 +21,10 @@ typedef struct {
   // data
   float *es;
 } Mat;
+
+// print rows by:
+// skipping rows by amount of columns and offset by j
+#define MAT_AT(m, i, j) (m).es[(i)*(m).cols + (j)]
 
 Mat mat_alloc(size_t rows, size_t cols)
 {
@@ -43,7 +48,15 @@ void mat_sum(Mat dst, Mat a)
   (void) dst;
   (void) a;
 }
-void mat_print(void);
+void mat_print(Mat m)
+{
+  for(size_t i = 0; i < m.rows; ++i) {
+	for(size_t j = 0; j < m.cols; ++j) {
+	  printf("%f ", MAT_AT(m, i ,j));
+	}
+	printf("\n");
+  }
+}
 
 
 #endif // NN_H_
