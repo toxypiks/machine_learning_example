@@ -95,13 +95,13 @@ int main(void)
    w1 -= rate * dw1;
    w2 -= rate * dw2;
    b -= rate * db;
-   printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
+   //printf("w1 = %f, w2 = %f, b = %f, c = %f\n", w1, w2, b, c);
   // printf("%f\n", c);
   }
 
   for (size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
-	  // printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
+	  printf("%zu | %zu = %f\n", i, j, sigmoidf(i*w1 + j*w2 + b));
 	}
   }
   return 0;
