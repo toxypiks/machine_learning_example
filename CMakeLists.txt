@@ -53,5 +53,5 @@ target_sources(nn
   )
 
 target_link_libraries(gates m)
-
 target_link_libraries(xor m)
+target_link_libraries(nn_src m)

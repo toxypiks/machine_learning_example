@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <math.h>
 
 #ifndef NN_MALLOC
 #include <stdlib.h>
@@ -27,18 +28,24 @@ typedef struct {
 #define MAT_AT(m, i, j) (m).es[(i)*(m).cols + (j)]
 
 float rand_float(void);
+float sigmoidf(float x);
 
 Mat mat_alloc(size_t rows, size_t cols);
 void mat_fill(Mat m, float x);
 void mat_rand(Mat m, float low, float high);
 void mat_dot(Mat dst, Mat a, Mat b);
 void mat_sum(Mat dst, Mat a);
+void mat_sig(Mat m);
 void mat_print(Mat m, const char* name);
 #define MAT_PRINT(m) mat_print(m, #m)
 
 #endif // NN_H_
 
 #ifdef NN_IMPLEMENTATION
+
+float sigmoidf(float x) {
+  return 1.f / (1.f + (expf(-x)));
+}
 
 float rand_float(void)
 {
@@ -80,6 +87,15 @@ void mat_sum(Mat dst, Mat a)
 	}
   }
 }
+
+void mat_sig(Mat m) {
+  for (size_t i = 0; i < m.rows; ++i) {
+	for (size_t j = 0; j < m.cols; ++j) {
+	  MAT_AT(m, i, j) = sigmoidf(MAT_AT(m, i, j));
+	}
+  }
+}
+
 void mat_print(Mat m, const char* name)
 {
   printf("%s = [\n", name);
