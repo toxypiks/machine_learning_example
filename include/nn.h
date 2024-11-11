@@ -33,7 +33,8 @@ void mat_fill(Mat m, float x);
 void mat_rand(Mat m, float low, float high);
 void mat_dot(Mat dst, Mat a, Mat b);
 void mat_sum(Mat dst, Mat a);
-void mat_print(Mat m);
+void mat_print(Mat m, const char* name);
+#define MAT_PRINT(m) mat_print(m, #m)
 
 #endif // NN_H_
 
@@ -79,14 +80,16 @@ void mat_sum(Mat dst, Mat a)
 	}
   }
 }
-void mat_print(Mat m)
+void mat_print(Mat m, const char* name)
 {
+  printf("%s = [\n", name);
   for(size_t i = 0; i < m.rows; ++i) {
 	for(size_t j = 0; j < m.cols; ++j) {
-	  printf("%f ", MAT_AT(m, i ,j));
+	  printf("    %f ", MAT_AT(m, i ,j));
 	}
 	printf("\n");
   }
+  printf("]\n");
 }
 
 void mat_fill(Mat m, float x) {
