@@ -12,9 +12,17 @@ typedef struct {
   Mat w2, b2, a2;
 } Xor;
 
-float forward_xor(Xor m, float x1, float x2) {
-  MAT_AT(m.a0, 0, 0) = x1;
-  MAT_AT(m.a0, 0, 1) = x2;
+float cost(Xor m, Mat ti, Mat to)
+{
+  assert(ti.rows == to.rows);
+  size_t n = ti.rows;
+
+  for(size_t i = 0; i < n ; ++i) {
+	// mat_copy(m.a0, mat_row(ti, i));
+  }
+}
+
+void forward_xor(Xor m) {
 
   mat_dot(m.a1, m.a0, m.w1);
   mat_sum(m.a1, m.b1);
@@ -23,8 +31,6 @@ float forward_xor(Xor m, float x1, float x2) {
   mat_dot(m.a2, m.a1, m.w2);
   mat_sum(m.a2, m.b2);
   mat_sig(m.a2);
-
-  return *m.a2.es;
 }
 
 int main(void)
@@ -51,9 +57,20 @@ int main(void)
   // create truth-table to see performance
   for(size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
-	  printf("%zu ^ %zu = %f\n", i, j, forward_xor(m, i, j));
+	  MAT_AT(m.a0, 0, 0) = i;
+	  MAT_AT(m.a0, 0, 1) = j;
+	  forward_xor(m);
+	  float y = *m.a2.es;
+	  printf("%zu ^ %zu = %f\n", i, j, y);
 	}
   }
+
+  Mat test_matrix = mat_alloc(4, 4);
+  mat_rand(test_matrix, 1, 5);
+  mat_print(test_matrix, "test_matrix");
+
+  Mat sub_test_matrix = mat_row(test_matrix, 1);
+  mat_print(sub_test_matrix, "sub_test_matrix");
 
   return 0;
 }
