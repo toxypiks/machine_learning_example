@@ -12,16 +12,6 @@ typedef struct {
   Mat w2, b2, a2;
 } Xor;
 
-float cost(Xor m, Mat ti, Mat to)
-{
-  assert(ti.rows == to.rows);
-  size_t n = ti.rows;
-
-  for(size_t i = 0; i < n ; ++i) {
-	// mat_copy(m.a0, mat_row(ti, i));
-  }
-}
-
 void forward_xor(Xor m) {
 
   mat_dot(m.a1, m.a0, m.w1);
@@ -33,9 +23,60 @@ void forward_xor(Xor m) {
   mat_sig(m.a2);
 }
 
+float cost(Xor m, Mat ti, Mat to)
+{
+  assert(ti.rows == to.rows);
+  assert(to.cols == m.a2.cols);
+  size_t n = ti.rows;
+
+  float c = 0;
+  for(size_t i = 0; i < n ; ++i) {
+	// copies one row from training data to a0 for each interation
+	// so each row of training data is copied in one row for a0
+	Mat x = mat_row(ti, i);
+	// expected data
+	Mat y = mat_row(to, i);
+
+	mat_copy(m.a0, x);
+	forward_xor(m);
+
+	size_t q = to.cols;
+	for (size_t j = 0; j < q; ++j) {
+	  float d = MAT_AT(m.a2, 0, j) - MAT_AT(y, 0, j);
+	  c += d*d;
+	}
+  }
+  return c/n;
+}
+
+float td[] = {
+  0, 0, 0,
+  0, 1, 1,
+  1, 0, 1,
+  1, 1, 0,
+};
+
 int main(void)
 {
   srand(time(0));
+
+  size_t stride = 3;
+  // create submatrix out of columns td
+  size_t n = sizeof(td)/sizeof(td[0])/3;
+
+  Mat ti = {
+	.rows = n,
+	.cols = 2,
+	.stride = stride,
+	.es = td,
+  };
+
+  Mat to = {
+	.rows = n,
+	.cols = 1,
+	.stride = stride,
+	.es = td  + 2,
+  };
 
   Xor m;
 
@@ -54,6 +95,9 @@ int main(void)
   mat_rand(m.w2, 0, 1);
   mat_rand(m.b2, 0, 1);
 
+  printf("cost: %f\n", cost(m, ti, to));
+
+  #if 0
   // create truth-table to see performance
   for(size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
@@ -64,13 +108,7 @@ int main(void)
 	  printf("%zu ^ %zu = %f\n", i, j, y);
 	}
   }
-
-  Mat test_matrix = mat_alloc(4, 4);
-  mat_rand(test_matrix, 1, 5);
-  mat_print(test_matrix, "test_matrix");
-
-  Mat sub_test_matrix = mat_row(test_matrix, 1);
-  mat_print(sub_test_matrix, "sub_test_matrix");
+  #endif
 
   return 0;
 }
