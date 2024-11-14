@@ -12,8 +12,23 @@ typedef struct {
   Mat w2, b2, a2;
 } Xor;
 
-void forward_xor(Xor m) {
+Xor xor_alloc(void)
+{
+  Xor m;
 
+  m.a0 = mat_alloc(1, 2);
+  m.w1 = mat_alloc(2, 2);
+  m.b1 = mat_alloc(1, 2);
+  m.a1 = mat_alloc(1, 2);
+
+  m.w2 = mat_alloc(2, 1);
+  m.b2 = mat_alloc(1, 1);
+  m.a2 = mat_alloc(1, 1);
+  return m;
+}
+
+void forward_xor(Xor m)
+{
   mat_dot(m.a1, m.a0, m.w1);
   mat_sum(m.a1, m.b1);
   mat_sig(m.a1);
@@ -49,6 +64,77 @@ float cost(Xor m, Mat ti, Mat to)
   return c/n;
 }
 
+void finite_diff(Xor m, Xor g, float eps, Mat ti, Mat to)
+{
+  float saved;
+
+  float c = cost(m, ti, to);
+
+  for(size_t i = 0; i < m.w1.rows; ++i) {
+	for (size_t j = 0; j < m.w1.cols; ++j ) {
+	  saved = MAT_AT(m.w1, i, j);
+	  MAT_AT(m.w1, i, j) += eps;
+	  MAT_AT(g.w1,i, j) = (cost(m, ti, to) - c)/eps;
+	  MAT_AT(m.w1, i, j) = saved;
+	}
+  }
+
+  for(size_t i = 0; i < m.b1.rows; ++i) {
+	for (size_t j = 0; j < m.b1.cols; ++j ) {
+	  saved = MAT_AT(m.b1, i, j);
+	  MAT_AT(m.b1, i, j) += eps;
+	  MAT_AT(g.b1,i, j) = (cost(m, ti, to) - c)/eps;
+	  MAT_AT(m.b1, i, j) = saved;
+	}
+  }
+
+  for(size_t i = 0; i < m.w2.rows; ++i) {
+	for (size_t j = 0; j < m.w2.cols; ++j ) {
+	  saved = MAT_AT(m.w2, i, j);
+	  MAT_AT(m.w2, i, j) += eps;
+	  MAT_AT(g.w2,i, j) = (cost(m, ti, to) - c)/eps;
+	  MAT_AT(m.w2, i, j) = saved;
+	}
+  }
+
+  for(size_t i = 0; i < m.b2.rows; ++i) {
+	for (size_t j = 0; j < m.b2.cols; ++j ) {
+	  saved = MAT_AT(m.b2, i, j);
+	  MAT_AT(m.b2, i, j) += eps;
+	  MAT_AT(g.b2,i, j) = (cost(m, ti, to) - c)/eps;
+	  MAT_AT(m.b2, i, j) = saved;
+	}
+  }
+}
+
+void apply_grade_from_finite_difference_to_xor(Xor m, Xor g, float rate)
+{
+  for(size_t i = 0; i < m.w1.rows; ++i) {
+	for (size_t j = 0; j < m.w1.cols; ++j ) {
+	  MAT_AT(m.w1, i, j) -= rate*MAT_AT(g.w1,i, j);
+	}
+  }
+
+  for(size_t i = 0; i < m.b1.rows; ++i) {
+	for (size_t j = 0; j < m.b1.cols; ++j ) {
+	  MAT_AT(m.b1, i, j) -= rate*MAT_AT(g.b1,i, j);
+	}
+  }
+
+  for(size_t i = 0; i < m.w2.rows; ++i) {
+	for (size_t j = 0; j < m.w2.cols; ++j ) {
+	  MAT_AT(m.w2, i, j) -= rate*MAT_AT(g.w2,i, j);
+	}
+  }
+
+  for(size_t i = 0; i < m.b2.rows; ++i) {
+	for (size_t j = 0; j < m.b2.cols; ++j ) {
+	  MAT_AT(m.b2, i, j) -= rate*MAT_AT(g.b2,i, j);
+	}
+  }
+}
+
+
 float td[] = {
   0, 0, 0,
   0, 1, 1,
@@ -78,26 +164,27 @@ int main(void)
 	.es = td  + 2,
   };
 
-  Xor m;
-
-  m.a0 = mat_alloc(1, 2);
-
-  m.w1 = mat_alloc(2, 2);
-  m.b1 = mat_alloc(1, 2);
-  m.a1 = mat_alloc(1, 2);
-
-  m.w2 = mat_alloc(2, 1);
-  m.b2 = mat_alloc(1, 1);
-  m.a2 = mat_alloc(1, 1);
+  Xor m = xor_alloc();
+  Xor g = xor_alloc();
 
   mat_rand(m.w1, 0, 1);
   mat_rand(m.b1, 0, 1);
   mat_rand(m.w2, 0, 1);
   mat_rand(m.b2, 0, 1);
 
+  float eps = 1e-1;
+  float rate = 1e-1;
+
   printf("cost: %f\n", cost(m, ti, to));
 
-  #if 0
+  for(size_t i = 0; i < 10*1000; ++i) {
+    finite_diff(m, g, eps, ti, to);
+    apply_grade_from_finite_difference_to_xor(m, g, rate);
+    printf("second cost after learning: %f\n", cost(m, ti, to));
+  }
+
+  printf("---------------------\n");
+  #if 1
   // create truth-table to see performance
   for(size_t i = 0; i < 2; ++i) {
 	for (size_t j = 0; j < 2; ++j) {
