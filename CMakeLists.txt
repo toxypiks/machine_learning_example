@@ -18,6 +18,10 @@ set(XOR
   ${CMAKE_CURRENT_SOURCE_DIR}/src/xor.c
   )
 
+set(XOR_WITH_MATRICES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/xor_with_matrices.c
+  )
+
 set(NN_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/nn.c
   )
@@ -46,6 +50,12 @@ target_sources(nn_src
   ${NN_SRC}
   )
 
+add_executable(xor_with_matrices)
+target_sources(xor_with_matrices
+ PRIVATE
+  ${XOR_WITH_MATRICES}
+  )
+
 add_library(nn SHARED)
 target_sources(nn
  PRIVATE
@@ -54,4 +64,5 @@ target_sources(nn
 
 target_link_libraries(gates m)
 target_link_libraries(xor m)
+target_link_libraries(xor_with_matrices m)
 target_link_libraries(nn_src m)
