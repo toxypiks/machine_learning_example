@@ -30,6 +30,8 @@ typedef struct {
   float *es;
 } Mat;
 
+#define NN_INPUT(nn) (nn).as[0]
+#define NN_OUTPUT(nn) (nn).as[(nn).count]
 // print rows by:
 // skipping rows by amount of columns and offset by j
 #define MAT_AT(m, i, j) (m).es[(i)*(m).stride + (j)]
@@ -54,7 +56,8 @@ typedef struct {
 
 NN nn_alloc(size_t *arch, size_t arch_count);
 void nn_print(NN nn, const char* name);
-void nn_rand(NN n, float low, float high);
+void nn_rand(NN nn, float low, float high);
+void nn_forward(NN nn);
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
 
@@ -215,6 +218,15 @@ void nn_rand(NN nn, float low, float high)
   for (size_t i = 0; i < nn.count; ++i) {
 	mat_rand(nn.ws[i], low, high);
 	mat_rand(nn.bs[i], low, high);
+  }
+}
+
+void nn_forward(NN nn)
+{
+  for (size_t i = 0; i < nn.count; ++i) {
+	mat_dot(nn.as[i+1] , nn.as[i], nn.ws[i]);
+	mat_sum(nn.as[i+1], nn.bs[i]);
+	mat_sig(nn.as[i+1]);
   }
 }
 
