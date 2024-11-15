@@ -4,7 +4,9 @@
 #include "nn.h"
 
 int main(void) {
-  printf("Hello World\n");
+  size_t arch[] = {2, 2, 1};
+  NN nn = nn_alloc(arch, ARRAY_LEN(arch));
+  NN_PRINT(nn);
   return 0;
 }
 

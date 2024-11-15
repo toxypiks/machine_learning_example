@@ -42,8 +42,8 @@ void mat_copy(Mat dst, Mat src);
 void mat_dot(Mat dst, Mat a, Mat b);
 void mat_sum(Mat dst, Mat a);
 void mat_sig(Mat m);
-void mat_print(Mat m, const char* name);
-#define MAT_PRINT(m) mat_print(m, #m)
+void mat_print(Mat m, const char* name, size_t padding);
+#define MAT_PRINT(m) mat_print(m, #m, 0)
 
 typedef struct {
   size_t count;
@@ -53,6 +53,9 @@ typedef struct {
 } NN;
 
 NN nn_alloc(size_t *arch, size_t arch_count);
+void nn_print(NN nn, const char* name);
+#define NN_PRINT(nn) nn_print(nn, #nn)
+
 
 #endif // NN_H_
 
@@ -133,16 +136,18 @@ void mat_sig(Mat m) {
   }
 }
 
-void mat_print(Mat m, const char* name)
+void mat_print(Mat m, const char* name, size_t padding)
 {
-  printf("%s = [\n", name);
+  //%*s creates an empty string of size padding
+  printf("%*s%s =[\n", (int) padding, "", name);
   for(size_t i = 0; i < m.rows; ++i) {
+	printf("%*s", (int) padding, "");
 	for(size_t j = 0; j < m.cols; ++j) {
-	  printf("    %f ", MAT_AT(m, i ,j));
+	  printf("%f ", MAT_AT(m, i ,j));
 	}
 	printf("\n");
   }
-  printf("]\n");
+  printf("%*s]\n", (int) padding, "");
 }
 
 void mat_fill(Mat m, float x) {
@@ -186,6 +191,22 @@ NN nn_alloc(size_t *arch, size_t arch_count)
 	nn.as[i]   = mat_alloc(1, arch[i]);
   }
   return nn;
+}
+
+void nn_print(NN nn, const char* name)
+{
+  char buf[256];
+  printf("%s = [\n", name);
+  for (size_t i = 0; i < nn.count; ++i) {
+	// stores print stuff in buffer buf
+	snprintf(buf, sizeof(buf), "ws%zu", i);
+	// uses buf to print ws and i
+	mat_print(nn.ws[i], buf, 4);
+	snprintf(buf, sizeof(buf), "bs%zu", i);
+	mat_print(nn.bs[i], buf, 4);
+  }
+
+  printf("]\n");
 }
 
 #endif // NN_IMPLEMENTATION
