@@ -41,7 +41,7 @@ Mat mat_row(Mat m, size_t row);
 void mat_copy(Mat dst, Mat src);
 void mat_dot(Mat dst, Mat a, Mat b);
 void mat_sum(Mat dst, Mat a);
-void mat_sig(Mat m);
+void mat_sig(Mat m); 
 void mat_print(Mat m, const char* name, size_t padding);
 #define MAT_PRINT(m) mat_print(m, #m, 0)
 
@@ -54,6 +54,7 @@ typedef struct {
 
 NN nn_alloc(size_t *arch, size_t arch_count);
 void nn_print(NN nn, const char* name);
+void nn_rand(NN n, float low, float high);
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
 
@@ -207,6 +208,14 @@ void nn_print(NN nn, const char* name)
   }
 
   printf("]\n");
+}
+
+void nn_rand(NN nn, float low, float high)
+{
+  for (size_t i = 0; i < nn.count; ++i) {
+	mat_rand(nn.ws[i], low, high);
+	mat_rand(nn.bs[i], low, high);
+  }
 }
 
 #endif // NN_IMPLEMENTATION
