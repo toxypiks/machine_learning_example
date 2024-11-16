@@ -43,7 +43,7 @@ Mat mat_row(Mat m, size_t row);
 void mat_copy(Mat dst, Mat src);
 void mat_dot(Mat dst, Mat a, Mat b);
 void mat_sum(Mat dst, Mat a);
-void mat_sig(Mat m); 
+void mat_sig(Mat m);
 void mat_print(Mat m, const char* name, size_t padding);
 #define MAT_PRINT(m) mat_print(m, #m, 0)
 
@@ -58,6 +58,8 @@ NN nn_alloc(size_t *arch, size_t arch_count);
 void nn_print(NN nn, const char* name);
 void nn_rand(NN nn, float low, float high);
 void nn_forward(NN nn);
+float nn_cost(NN nn, Mat ti, Mat to);
+void nn_finite_diff(NN nn, NN g, float eps, Mat ti, Mat to);
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
 
@@ -228,6 +230,33 @@ void nn_forward(NN nn)
 	mat_sum(nn.as[i+1], nn.bs[i]);
 	mat_sig(nn.as[i+1]);
   }
+}
+
+float nn_cost(NN nn, Mat ti, Mat to)
+{
+  assert(ti.rows == to.rows);
+  assert(to.cols == NN_OUTPUT(nn).cols);
+  size_t n = ti.rows;
+
+  float c = 0;
+  for(size_t i = 0; i < n ; ++i) {
+	Mat x = mat_row(ti, i);
+	Mat y = mat_row(to, i);
+
+	mat_copy(NN_INPUT(nn), x);
+	nn_forward(nn);
+	size_t q = to.cols;
+	for (size_t j = 0; j < q; ++j) {
+	  float d = MAT_AT(NN_OUTPUT(nn), 0, j) - MAT_AT(y, 0, j);
+	  c += d*d;
+	}
+  }
+  return c/n;
+}
+
+void nn_finite_diff(NN nn, NN g, float eps, Mat ti, Mat to)
+{
+  // not implemented yet
 }
 
 #endif // NN_IMPLEMENTATION

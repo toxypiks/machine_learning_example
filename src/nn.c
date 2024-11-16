@@ -38,10 +38,9 @@ int main(void) {
   nn_rand(nn, 0, 1);
 
   Mat row = mat_row(ti, 2);
-  MAT_PRINT(row);
   mat_copy(NN_INPUT(nn), row);
   nn_forward(nn);
-  MAT_PRINT(NN_OUTPUT(nn));
+  printf("cost = %f\n", nn_cost(nn, ti, to));
   return 0;
 }
 
