@@ -256,7 +256,27 @@ float nn_cost(NN nn, Mat ti, Mat to)
 
 void nn_finite_diff(NN nn, NN g, float eps, Mat ti, Mat to)
 {
-  // not implemented yet
+  float saved;
+  float c = nn_cost(nn, ti, to);
+  for (size_t i = 0; i < nn.count; ++i) {
+	for (size_t j = 0; j < nn.ws[i].rows; ++j) {
+	  for (size_t k = 0; k < nn.ws[i].cols; ++k) {
+		saved = MAT_AT(nn.ws[i], j, k);
+		MAT_AT(nn.ws[i], j, k) += eps;
+		MAT_AT(g.ws[i], j, k) = (nn_cost(nn, ti, to) - c)/eps;
+		MAT_AT(nn.ws[i], j, k) = saved;
+	  }
+	}
+
+	for (size_t j = 0; j < nn.bs[i].rows; ++j) {
+	  for (size_t k = 0; k < nn.bs[i].cols; ++k) {
+		saved = MAT_AT(nn.bs[i], j, k);
+		MAT_AT(nn.bs[i], j, k) += eps;
+		MAT_AT(g.bs[i], j, k) = (nn_cost(nn, ti, to) - c)/eps;
+		MAT_AT(nn.bs[i], j, k) = saved;
+	  }
+	}
+  }
 }
 
 #endif // NN_IMPLEMENTATION
