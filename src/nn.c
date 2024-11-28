@@ -41,11 +41,20 @@ int main(void) {
   float eps = 1e-1;
   float rate = 1e-1;
 
-  Mat row = mat_row(ti, 2);
-  mat_copy(NN_INPUT(nn), row);
-  nn_forward(nn);
   printf("cost = %f\n", nn_cost(nn, ti, to));
-  nn_finite_diff(nn, g, eps, ti, to);
-  nn_apply_finite_diff(nn, g, rate);
+  for (size_t i = 0; i < 20*1000; ++i) {
+    nn_finite_diff(nn, g, eps, ti, to);
+    nn_apply_finite_diff(nn, g, rate);
+    printf("cost = %f\n", nn_cost(nn, ti, to));
+  }
+
+  for (size_t i = 0; i < 2; ++i) {
+	for (size_t j = 0; j < 2; ++j) {
+	  MAT_AT(NN_INPUT(nn), 0, 0) = i;
+	  MAT_AT(NN_INPUT(nn), 0, 1) = j;
+	  nn_forward(nn);
+	  printf("%zu ^ %zu = %f\n", i, j, MAT_AT(NN_OUTPUT(nn), 0, 0));
+	}
+  }
   return 0;
 }
