@@ -8,12 +8,14 @@ float td[] = {
   0, 0, 0,
   0, 1, 1,
   1, 0, 1,
-  1, 1, 0,
+  1, 1, 1,
 };
 
 int main(void) {
 
-  srand(time(0));
+  // srand(time(0));
+
+  srand(69);
 
   size_t stride = 3;
   // create submatrix out of columns td
@@ -38,12 +40,16 @@ int main(void) {
   NN g = nn_alloc(arch, ARRAY_LEN(arch));
   nn_rand(nn, 0, 1);
 
-  float eps = 1e-1;
-  float rate = 1e-1;
+  float rate = 1;
 
   printf("cost = %f\n", nn_cost(nn, ti, to));
-  for (size_t i = 0; i < 20*1000; ++i) {
+  for (size_t i = 0; i < 5000; ++i) {
+#if 0
+    float eps = 1e-1;
     nn_finite_diff(nn, g, eps, ti, to);
+#else
+	nn_backprop(nn, g, ti, to);
+#endif
     nn_apply_finite_diff(nn, g, rate);
     printf("cost = %f\n", nn_cost(nn, ti, to));
   }
