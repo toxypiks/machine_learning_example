@@ -26,6 +26,10 @@ set(NN_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/nn.c
   )
 
+set(ADDER
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/adder.c
+  )
+
 add_executable(machine_learning)
 target_sources(machine_learning
  PRIVATE
@@ -50,6 +54,12 @@ target_sources(nn_src
   ${NN_SRC}
   )
 
+add_executable(adder)
+target_sources(adder
+ PRIVATE
+  ${ADDER}
+  )
+
 add_executable(xor_with_matrices)
 target_sources(xor_with_matrices
  PRIVATE
@@ -66,3 +76,4 @@ target_link_libraries(gates m)
 target_link_libraries(xor m)
 target_link_libraries(xor_with_matrices m)
 target_link_libraries(nn_src m)
+target_link_libraries(adder m)
