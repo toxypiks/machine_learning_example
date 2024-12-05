@@ -4,7 +4,6 @@
 #define BITS 2
 
 int main(void) {
-
   // left shift operator 1 << 2 = (1*2)*2 = 4 => 4 * 4 = 16 rows
   // input are two numbers with 2 bits each at the beginning
   // BITS will get increased in the future
@@ -29,6 +28,16 @@ int main(void) {
     MAT_AT(to, i, BITS) = overflow;
   }
   MAT_PRINT(ti);
-  MAT_PRINT(to);
+  //MAT_PRINT(to);
+
+  size_t arch[] = {2*BITS, BITS + 1};
+  NN nn = nn_alloc(arch, ARRAY_LEN(arch));
+  NN g = nn_alloc(arch, ARRAY_LEN(arch));
+  nn_rand(nn, 0, 1);
+  //NN_PRINT(nn);
+  //nn_backprop(nn, g, ti, to);
+  //NN_PRINT(g);
+
+  //nn_cost(nn, ti, to);
   return 0;
 }
