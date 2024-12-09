@@ -190,7 +190,7 @@ NN nn_alloc(size_t *arch, size_t arch_count)
   NN_ASSERT(nn.ws != NULL);
   nn.bs = NN_MALLOC(sizeof(*nn.bs)*nn.count);
   NN_ASSERT(nn.bs != NULL);
-  nn.as = NN_MALLOC(sizeof(*nn.as)*nn.count +1);
+  nn.as = NN_MALLOC(sizeof(*nn.as)*(nn.count + 1));
   NN_ASSERT(nn.as != NULL);
 
   nn.as[0] = mat_alloc(1, arch[0]);

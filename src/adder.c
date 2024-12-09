@@ -34,10 +34,10 @@ int main(void) {
   NN nn = nn_alloc(arch, ARRAY_LEN(arch));
   NN g = nn_alloc(arch, ARRAY_LEN(arch));
   nn_rand(nn, 0, 1);
-  //NN_PRINT(nn);
+  NN_PRINT(nn);
   //nn_backprop(nn, g, ti, to);
-  //NN_PRINT(g);
+  NN_PRINT(g);
 
-  //nn_cost(nn, ti, to);
+  printf("cost : %f\n", nn_cost(nn, ti, to));
   return 0;
 }
