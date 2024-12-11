@@ -33,9 +33,13 @@ int main(void) {
   printf("cost : %f\n", nn_cost(nn, ti, to));
 
   for(size_t i = 0; i < 10*1000; ++i) {
-	nn_backprop(nn, g, ti, to);
-	nn_apply_finite_diff(nn, g, rate);
-	printf("%zu: c = %f\n", i, nn_cost(nn, ti, to));
+#if 0
+    nn_backprop(nn, g, ti, to);
+#else
+    nn_finite_diff(nn, g, 1e-1, ti, to);
+#endif
+    nn_apply_finite_diff(nn, g, rate);
+    printf("%zu: c = %f\n", i, nn_cost(nn, ti, to));
   }
 
   size_t fails = 0;
