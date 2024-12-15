@@ -1,9 +1,11 @@
 #define NN_IMPLEMENTATION
 #include "nn.h"
+#include <time.h>
 
-#define BITS 3
+#define BITS 4
 
 int main(void) {
+  srand(time(0));
   // left shift operator 1 << 2 = (1*2)*2 = 4 => 4 * 4 = 16 rows
   // input are two numbers with 2 bits each at the beginning
   // BITS will get increased in the future
@@ -23,17 +25,17 @@ int main(void) {
     MAT_AT(to, i, BITS) = z >= n;
     }
 
-  size_t arch[] = {2*BITS, 2*BITS + 1, BITS + 1};
+  size_t arch[] = {2*BITS, 4*BITS + 1, BITS + 1};
   NN nn = nn_alloc(arch, ARRAY_LEN(arch));
   NN g = nn_alloc(arch, ARRAY_LEN(arch));
   nn_rand(nn, 0, 1);
-  //NN_PRINT(nn);
+  // NN_PRINT(nn);
 
   float rate = 1;
   printf("cost : %f\n", nn_cost(nn, ti, to));
 
   for(size_t i = 0; i < 10*1000; ++i) {
-#if 0
+#if 1
     nn_backprop(nn, g, ti, to);
 #else
     nn_finite_diff(nn, g, 1e-1, ti, to);
