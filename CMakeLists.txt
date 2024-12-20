@@ -30,6 +30,14 @@ set(ADDER
   ${CMAKE_CURRENT_SOURCE_DIR}/src/adder.c
   )
 
+set(DUMP_NN_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/dump_nn.c
+  )
+
+set(OLIVE_C_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/olive.c
+  )
+
 add_executable(machine_learning)
 target_sources(machine_learning
  PRIVATE
@@ -66,6 +74,18 @@ target_sources(xor_with_matrices
   ${XOR_WITH_MATRICES}
   )
 
+add_executable(dump_nn)
+target_sources(dump_nn
+ PRIVATE
+  ${DUMP_NN_SRC}
+  )
+
+add_library(olive_c)
+target_sources(olive_c
+ PRIVATE
+  ${OLIVE_C_SRC}
+  )
+
 add_library(nn SHARED)
 target_sources(nn
  PRIVATE
@@ -77,3 +97,4 @@ target_link_libraries(xor m)
 target_link_libraries(xor_with_matrices m)
 target_link_libraries(nn_src m)
 target_link_libraries(adder m)
+target_link_libraries(dump_nn m)
