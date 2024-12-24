@@ -8,8 +8,9 @@
 
 #define BITS 4
 
-#define IMG_WIDTH 800
-#define IMG_HEIGHT 800
+#define IMG_FACTOR 80
+#define IMG_WIDTH (16*IMG_FACTOR)
+#define IMG_HEIGHT (9*IMG_FACTOR)
 
 uint32_t img_pixels[IMG_WIDTH*IMG_HEIGHT];
 
@@ -87,7 +88,7 @@ int main(void) {
   float rate = 1;
   printf("cost : %f\n", nn_cost(nn, ti, to));
 
-  for(size_t i = 0; i < 1000; ++i) {
+  for(size_t i = 0; i < 5000; ++i) {
 #if 1
     nn_backprop(nn, g, ti, to);
 #else
@@ -99,7 +100,7 @@ int main(void) {
       Olivec_Canvas img = olivec_canvas(img_pixels, IMG_WIDTH, IMG_HEIGHT, IMG_WIDTH);
       nn_render(img, nn);
       char img_file_path[256];
-      snprintf(img_file_path, sizeof(img_file_path), "../out/adder-%03zu.png", i);
+      snprintf(img_file_path, sizeof(img_file_path), "../out/adder-%05zu.png", i);
       if (!stbi_write_png(img_file_path, img.width, img.height, 4, img.pixels, img.stride*sizeof(uint32_t)))
       {
         printf("ERROR: could not save file %s\n", img_file_path);
