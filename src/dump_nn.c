@@ -33,7 +33,7 @@ int main (void)
   int layer_y = img.height/2 - layer_height/2;
   for (size_t i = 0; i < arch[0]; ++i) {
     int cx = layer_x;
-    int cy = layer_y + i * layer_vpad;
+    int cy = layer_y + i * layer_vpad + layer_vpad/2;
     olivec_circle(img, cx, cy, neuron_radius, neuron_color);
   }
 
