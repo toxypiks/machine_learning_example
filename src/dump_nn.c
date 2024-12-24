@@ -37,6 +37,9 @@ int main (void)
     olivec_circle(img, cx, cy, neuron_radius, neuron_color);
   }
 
+  uint32_t frame_thicc = 10;
+  uint32_t frame_color = 0xFF252525;
+  olivec_frame(img, 0, 0, img.width-1, img.height-1, frame_thicc, frame_color);
   const char *img_file_path = "nn.png";
   if (!stbi_write_png(img_file_path, img.width, img.height, 4, img.pixels, img.stride*sizeof(uint32_t)))
   {
