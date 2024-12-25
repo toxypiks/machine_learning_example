@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 
+find_package(raylib)
+
 set(MACHINE_LEARNING
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
   )
@@ -36,6 +38,10 @@ set(DUMP_NN_SRC
 
 set(OLIVE_C_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/olive.c
+  )
+
+set(RAYLIB_NN_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/raylib_nn.c
   )
 
 add_executable(machine_learning)
@@ -80,6 +86,12 @@ target_sources(dump_nn
   ${DUMP_NN_SRC}
   )
 
+add_executable(raylib_nn)
+target_sources(raylib_nn
+ PRIVATE
+  ${RAYLIB_NN_SRC}
+  )
+
 add_library(olive_c)
 target_sources(olive_c
  PRIVATE
@@ -91,6 +103,15 @@ target_sources(nn
  PRIVATE
   ${NN_SRC}
   )
+
+target_include_directories(raylib_nn
+ PRIVATE
+  ${raylib_INCLUDE_DIRS}
+  )
+
+target_link_libraries(raylib_nn
+  ${raylib_LIBRARIES}
+)
 
 target_link_libraries(gates m)
 target_link_libraries(xor m)
