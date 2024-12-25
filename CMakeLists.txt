@@ -111,6 +111,15 @@ target_include_directories(raylib_nn
 
 target_link_libraries(raylib_nn
   ${raylib_LIBRARIES}
+  )
+
+target_include_directories(adder
+ PRIVATE
+  ${raylib_INCLUDE_DIRS}
+  )
+
+target_link_libraries(adder
+  ${raylib_LIBRARIES}
 )
 
 target_link_libraries(gates m)
