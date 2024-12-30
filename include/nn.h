@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
+#include <stdint.h>
 
 #ifndef NN_MALLOC
 #include <stdlib.h>
@@ -37,6 +39,8 @@ typedef struct {
 #define MAT_AT(m, i, j) (m).es[(i)*(m).stride + (j)]
 
 Mat mat_alloc(size_t rows, size_t cols);
+void mat_save(FILE *out, Mat m);
+Mat mat_load(FILE *in);
 void mat_fill(Mat m, float x);
 void mat_rand(Mat m, float low, float high);
 Mat mat_row(Mat m, size_t row);
@@ -62,7 +66,7 @@ void nn_forward(NN nn);
 float nn_cost(NN nn, Mat ti, Mat to);
 void nn_finite_diff(NN nn, NN g, float eps, Mat ti, Mat to);
 void nn_backprop(NN nn, NN g, Mat ti, Mat to);
-void nn_apply_finite_diff(NN nn, NN g, float rate);
+void nn_learn(NN nn, NN g, float rate);
 #define NN_PRINT(nn) nn_print(nn, #nn)
 
 
@@ -89,6 +93,44 @@ Mat mat_alloc(size_t rows, size_t cols)
   NN_ASSERT(m.es != NULL);
   return m;
 }
+
+//saves matrix in an output file
+void mat_save(FILE *out, Mat m)
+{
+  const char *magic = "nn.h.mat";
+  //writes magic to out (1 = 1 byte)
+  fwrite(magic, strlen(magic), 1, out);
+  fwrite(&m.rows, sizeof(m.rows), 1, out);
+  fwrite(&m.cols, sizeof(m.cols), 1, out);
+  for (size_t i = 0; i < m.rows; ++i) {
+    size_t n = fwrite(&MAT_AT(m, i, 0), sizeof(*m.es), m.cols, out);
+    while (n < m.cols && !ferror(out)) {
+      size_t k = fwrite(m.es + n, sizeof(*m.es), m.cols - n, out);
+      n += k;
+    }
+  }
+}
+
+//loads matrix from an input file
+Mat mat_load(FILE *in)
+{
+  uint64_t magic;
+  fread(&magic, sizeof(magic), 1, in);
+  //hex-representation of string magic
+  NN_ASSERT(magic == 0x74616d2e682e6e6e);
+  size_t rows, cols;
+  fread(&rows, sizeof(rows), 1, in);
+  fread(&cols, sizeof(cols), 1, in);
+  Mat m = mat_alloc(rows, cols);
+
+  size_t n = fread(m.es, sizeof(*m.es), rows*cols, in);
+  while (n < rows*cols && !ferror(in)) {
+    size_t k = fread(m.es, sizeof(*m.es) + n, rows*cols - n, in);
+    n += k;
+  }
+  return m;
+}
+
 void mat_dot(Mat dst, Mat a, Mat b)
 {
   NN_ASSERT(a.cols == b.rows);
@@ -348,7 +390,7 @@ void nn_finite_diff(NN nn, NN g, float eps, Mat ti, Mat to)
   }
 }
 
-void nn_apply_finite_diff(NN nn, NN g, float rate)
+void nn_learn(NN nn, NN g, float rate)
 {
   for (size_t i = 0; i < nn.count; ++i) {
 	for (size_t j = 0; j < nn.ws[i].rows; ++j) {
